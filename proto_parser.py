@@ -1,28 +1,37 @@
-import addressbook_pb2
-
-DESC = addressbook_pb2.DESCRIPTOR
+"""This module provides a very simple proto parser."""
+from sample import addressbook_pb2
 
 class ProtoParser:
   """Class for parsing protos"""
+
   def __init__(self):
     self.columns = []
 
-  def decide_and_prepare(self, key, value):
-    for k in value.fields_by_name.values():
+  def _decide_and_prepare(self, message_type):
+    """Decides whether the proto message is nested or simple.
+
+    Args:
+      message_type: Message type object.
+    """
+    for k in message_type.fields_by_name.values():
       if k.type != 11:
         self.columns.append(k.full_name)
       else:
-        self.parse_proto(value, 'nested')
+        self._parse_proto(message_type, 'nested')
 
-  def parse_proto(self, desc, type='normal'):
+  def _parse_proto(self, desc, type='normal'):
     if type == 'normal':
-      for key, value in desc.message_types_by_name.items():
-        self.decide_and_prepare(key, value)
+      for key, message_type in desc.message_types_by_name.items():
+        self._decide_and_prepare(message_type)
     else:
-      for key, value in desc.nested_types_by_name.items():
-        self.decide_and_prepare(key, value)
+      for key, message_type in desc.nested_types_by_name.items():
+        self._decide_and_prepare(message_type)
+
+  def parse(self, desc):
+    self._parse_proto(desc)
+    return self.columns
 
 if __name__ == "__main__":
+  """This can be considered as a test for now."""
   parserObj = ProtoParser()
-  parserObj.parse_proto(DESC)
-  print parserObj.columns
+  print parserObj.parse(addressbook_pb2.DESCRIPTOR)

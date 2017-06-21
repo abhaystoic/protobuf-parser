@@ -1,6 +1,6 @@
 import addressbook_pb2
 
-_desc = addressbook_pb2.DESCRIPTOR
+DESC = addressbook_pb2.DESCRIPTOR
 
 class ProtoParser:
   """Class for parsing protos"""
@@ -24,5 +24,5 @@ class ProtoParser:
 
 if __name__ == "__main__":
   parserObj = ProtoParser()
-  parserObj.parse_proto(_desc)
-  return parserObj.columns
+  parserObj.parse_proto(DESC)
+  print parserObj.columns
